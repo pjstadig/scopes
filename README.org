@@ -1,0 +1,49 @@
+#+STARTUP: hidestars showall
+* scopes
+  A little library for resource scopes.
+
+  **It is only compatible with Java 7, because it uses ~java.lang.AutoCloseable~
+  and the suppressed exception features of ~java.lang.Throwable~.**
+** Usage
+   To use this for a Leiningen project
+   : [pjstadig/scopes "0.1.0"]
+   Or for a Maven project
+   : <dependency>
+   :   <groupId>pjstadig</groupId>
+   :   <artifactId>scopes</artifactId>
+   :   <version>0.1.0</version>
+   : </dependency>
+   A resource scope is established using the ~with-resource-scope~ macro, and
+   objects are registered with the closest dynamic scope using ~scoped!~ or
+   ~scoped-thunk!~.  For example:
+   : (require '[pjstadig.scopes :refer [scoped! with-resource-scope]])
+   : 
+   : (defn use-a-resource [f]
+   :   (line-seq (scoped! (io/input-stream (io/file f)))))
+   : 
+   : (with-resource-scope
+   :   (use-a-resource "/etc/hosts"))
+   The ~closeable?~ function can be used to determine if an object implements
+   the ~java.lang.AutoCloseable~ interface.
+   : ;; user=> (closeable? 1)
+   : ;; false
+   If you want ~with-resource-scope~, ~scoped!~, ~scoped-thunk!~, and
+   ~closeable?~ to be available everywhere automatically just use magic!
+   : [pjstadig/scopes-magic "0.1.0"]
+   Or for a Maven project
+   : <dependency>
+   :   <groupId>pjstadig</groupId>
+   :   <artifactId>scopes-magic</artifactId>
+   :   <version>0.1.0</version>
+   : </dependency>
+   Then you don't need to require the ~pjstadig.scopes~ namespace before using
+   it.
+** License
+  : Copyright © 2013 Paul Stadig. All rights reserved.
+  : 
+  : This Source Code Form is subject to the terms of the Mozilla Public License,
+  : v. 2.0. If a copy of the MPL was not distributed with this file, You can
+  : obtain one at http://mozilla.org/MPL/2.0/.
+  : 
+  : This Source Code Form is "Incompatible With Secondary Licenses", as defined
+  : by the Mozilla Public License, v. 2.0.
