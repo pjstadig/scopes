@@ -13,9 +13,17 @@
             [pjstadig.scopes :refer :all]))
 
 (deftest test-scoped
-  (let [closed? (atom false)]
+  (let [closed? (atom false)
+        closer (fn [_] (reset! closed? true))]
     (with-resource-scope
-      (scoped! nil (fn [_] (reset! closed? true))))
+      (scoped! nil closer))
+    (is @closed?)
+    (reset! closed? false)
+    (try
+      (with-resource-scope
+        (scoped! nil closer)
+        (throw (Exception.)))
+      (catch Exception e))
     (is @closed?)))
 
 (deftest test-suppression
