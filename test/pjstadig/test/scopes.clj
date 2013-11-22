@@ -45,3 +45,6 @@
       (let [suppressed (.getSuppressed e)]
         (is (= 1 (count suppressed)))
         (is (= "foo" (.getMessage (aget suppressed 0))))))))
+
+(deftest test-return-value
+  (is (= 1 (with-resource-scope 1))))

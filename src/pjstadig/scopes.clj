@@ -54,9 +54,10 @@
   `(binding [*resources* ()]
      (try
        ~@body
-       (close-resources)
        (catch Throwable t#
-         (close-resources t#)))))
+         (close-resources t#))
+       (finally
+         (close-resources)))))
 
 (defn closeable?
   "Return true if x implements AutoCloseable"
