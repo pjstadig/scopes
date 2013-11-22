@@ -6,12 +6,12 @@
   and the suppressed exception features of ~java.lang.Throwable~.**
 ** Usage
    To use this for a Leiningen project
-   : [pjstadig/scopes "0.1.0"]
+   : [pjstadig/scopes "0.2.0"]
    Or for a Maven project
    : <dependency>
    :   <groupId>pjstadig</groupId>
    :   <artifactId>scopes</artifactId>
-   :   <version>0.1.0</version>
+   :   <version>0.2.0</version>
    : </dependency>
    A resource scope is established using the ~with-resource-scope~ macro, and
    objects are registered with the closest dynamic scope using ~scoped!~ or
@@ -29,12 +29,12 @@
    : ;; false
    If you want ~with-resource-scope~, ~scoped!~, ~scoped-thunk!~, and
    ~closeable?~ to be available everywhere automatically just use magic!
-   : [pjstadig/scopes-magic "0.1.0"]
+   : [pjstadig/scopes-magic "0.2.0"]
    Or for a Maven project
    : <dependency>
    :   <groupId>pjstadig</groupId>
    :   <artifactId>scopes-magic</artifactId>
-   :   <version>0.1.0</version>
+   :   <version>0.2.0</version>
    : </dependency>
    Then you don't need to require the ~pjstadig.scopes~ namespace before using
    it.
