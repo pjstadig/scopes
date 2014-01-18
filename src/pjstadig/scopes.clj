@@ -10,10 +10,37 @@
   (:refer-clojure :exclude [closeable? scoped! scoped-thunk!
                             with-resource-scope])
   (:require [clojure.core.protocols :as p]
-            [clojure.java.io :as io])
-  (:import (java.lang AutoCloseable)))
+            [clojure.reflect :as reflect]
+            [clojure.java.io :as io]))
 
 (def ^:dynamic *resources*)
+
+(defprotocol ScopedCloseable
+  (close [this] "Close resource when leaving scope."))
+
+(defmacro ^:private if-compile
+  ([expr then] `(if-compile ~expr ~then nil))
+  ([expr then else]
+     (if (try (eval expr) (catch Throwable _ false))
+       then
+       else)))
+
+(if-compile java.lang.AutoCloseable
+  (extend-type java.lang.AutoCloseable
+    ScopedCloseable (close [x] (.close x))))
+
+(extend-type java.io.Closeable
+  ScopedCloseable (close [x] (.close x)))
+
+(def support-suppressed?
+  (->> Throwable reflect/type-reflect :members
+       (some #(= 'addSuppressed (:name %)))))
+
+(defmacro ^:private add-suppressed*
+  [t t'] (if support-suppressed? `(. ~t addSuppressed ~t')))
+
+(defn ^:private add-suppressed
+  [^Throwable t ^Throwable t'] (add-suppressed* t t'))
 
 (defn close-resources
   "Close resources registered in *resources* suppressing any exceptions that
@@ -24,7 +51,7 @@
          (let [resource (first *resources*)]
            (set! *resources* (rest *resources*))
            (try
-             (.close ^AutoCloseable resource)
+             (close resource)
              (catch Throwable t
                (close-resources t)))
            (recur)))))
@@ -34,9 +61,9 @@
          (let [resource (first *resources*)]
            (set! *resources* (rest *resources*))
            (try
-             (.close ^AutoCloseable resource)
+             (close resource)
              (catch Throwable t2
-               (.addSuppressed t t2)))
+               (add-suppressed t t2)))
            (recur))))
      (throw t)))
 
@@ -60,9 +87,8 @@
          (close-resources)))))
 
 (defn closeable?
-  "Return true if x implements AutoCloseable"
-  [x]
-  (instance? AutoCloseable x))
+  "Return true if x satisfies ScopedCloseable."
+  [x] (satisfies? ScopedCloseable x))
 
 (defn scoped!
   "Returns x after registering it with the closest dynamic with-resource-scope.
@@ -77,7 +103,7 @@
      x)
   ([x f]
      (scoped! (reify
-                AutoCloseable
+                ScopedCloseable
                 (close [this]
                   (f x))))
      x))
