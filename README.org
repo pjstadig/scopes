@@ -23,14 +23,14 @@
 ** Usage
    To use this for a Leiningen project
 
-   : [pjstadig/scopes "0.2.0"]
+   : [pjstadig/scopes "0.3.0"]
 
    Or for a Maven project
 
    : <dependency>
    :   <groupId>pjstadig</groupId>
    :   <artifactId>scopes</artifactId>
-   :   <version>0.2.0</version>
+   :   <version>0.3.0</version>
    : </dependency>
 
    A resource scope is established using the ~with-resource-scope~ macro, and
