@@ -1,4 +1,4 @@
-(defproject pjstadig/scopes "0.2.0"
+(defproject pjstadig/scopes "0.3.0"
   :description "A little library for resource scopes."
   :url "http://github.com/pjstadig/scopes"
   :license {:name "Mozilla Public License, v. 2.0"
