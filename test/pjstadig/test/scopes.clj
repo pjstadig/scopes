@@ -33,18 +33,20 @@
       (throw (Exception. "foo")))
     (catch Exception e
       (is (= "foo" (.getMessage e)))
-      (let [suppressed (.getSuppressed e)]
-        (is (= 1 (count suppressed)))
-        (is (= "bar" (.getMessage (aget suppressed 0)))))))
+      (when support-suppressed?
+        (let [suppressed (.getSuppressed e)]
+          (is (= 1 (count suppressed)))
+          (is (= "bar" (.getMessage (aget suppressed 0))))))))
   (try
     (with-resource-scope
       (scoped-thunk! #(throw (Exception. "foo")))
       (scoped-thunk! #(throw (Exception. "bar"))))
     (catch Exception e
       (is (= "bar" (.getMessage e)))
-      (let [suppressed (.getSuppressed e)]
-        (is (= 1 (count suppressed)))
-        (is (= "foo" (.getMessage (aget suppressed 0))))))))
+      (when support-suppressed?
+        (let [suppressed (.getSuppressed e)]
+          (is (= 1 (count suppressed)))
+          (is (= "foo" (.getMessage (aget suppressed 0)))))))))
 
 (deftest test-return-value
   (is (= 1 (with-resource-scope 1))))
