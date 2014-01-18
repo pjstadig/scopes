@@ -16,7 +16,7 @@
   :   (scoped-thunk! #(throw (Exception. "bar")))
   :   (throw (Exception. "foo")))
 
-  The "foo" exception will propagate from the body of the with-resource-scope.
+  The "foo" exception will propagate from the body of the ~with-resource-scope~.
   In the case of Java 7, you will be able to access the "bar" exception with
   ~.getSuppressed~.  In the case of Java 6, there will be no way to access the
   "bar" exception as it will have been thrown away.
@@ -48,8 +48,8 @@
    The ~closeable?~ function can be used to determine if an object satisfies the
    ~ScopedCloseable~ protocol.
 
-   : ;; user=> (closeable? 1)
-   : ;; false
+   : user=> (closeable? 1)
+   : false
 ** License
   : Copyright © 2013, 2014 Paul Stadig and contributors. All rights reserved.
   : 
