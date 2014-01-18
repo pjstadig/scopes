@@ -2,20 +2,41 @@
 * scopes
   A little library for resource scopes.
 
-  **It is only compatible with Java 7, because it uses ~java.lang.AutoCloseable~
-  and the suppressed exception features of ~java.lang.Throwable~.**
+  When used with Java 7, scopes will take advantage of the
+  ~java.lang.AutoCloseable~ interface and the suppressed exception features of
+  ~java.lang.Throwable~.
+
+  When used with Java 6, if—in response to an exception from the body of the
+  with-resource-scope macro—an exception occurs trying to close a resource,
+  then it will be swallowed up.
+
+  For example:
+
+  : (with-resource-scope
+  :   (scoped-thunk! #(throw (Exception. "bar")))
+  :   (throw (Exception. "foo")))
+
+  The "foo" exception will propagate from the body of the with-resource-scope.
+  In the case of Java 7, you will be able to access the "bar" exception with
+  ~.getSuppressed~.  In the case of Java 6, there will be no way to access the
+  "bar" exception as it will have been thrown away.
 ** Usage
    To use this for a Leiningen project
+
    : [pjstadig/scopes "0.2.0"]
+
    Or for a Maven project
+
    : <dependency>
    :   <groupId>pjstadig</groupId>
    :   <artifactId>scopes</artifactId>
    :   <version>0.2.0</version>
    : </dependency>
+
    A resource scope is established using the ~with-resource-scope~ macro, and
    objects are registered with the closest dynamic scope using ~scoped!~ or
    ~scoped-thunk!~.  For example:
+
    : (require '[pjstadig.scopes :refer [scoped! with-resource-scope]])
    : 
    : (defn use-a-resource [f]
@@ -23,23 +44,14 @@
    : 
    : (with-resource-scope
    :   (use-a-resource "/etc/hosts"))
-   The ~closeable?~ function can be used to determine if an object implements
-   the ~java.lang.AutoCloseable~ interface.
+
+   The ~closeable?~ function can be used to determine if an object satisfies the
+   ~ScopedCloseable~ protocol.
+
    : ;; user=> (closeable? 1)
    : ;; false
-   If you want ~with-resource-scope~, ~scoped!~, ~scoped-thunk!~, and
-   ~closeable?~ to be available everywhere automatically just use magic!
-   : [pjstadig/scopes-magic "0.2.0"]
-   Or for a Maven project
-   : <dependency>
-   :   <groupId>pjstadig</groupId>
-   :   <artifactId>scopes-magic</artifactId>
-   :   <version>0.2.0</version>
-   : </dependency>
-   Then you don't need to require the ~pjstadig.scopes~ namespace before using
-   it.
 ** License
-  : Copyright © 2013 Paul Stadig. All rights reserved.
+  : Copyright © 2013, 2014 Paul Stadig and contributors. All rights reserved.
   : 
   : This Source Code Form is subject to the terms of the Mozilla Public License,
   : v. 2.0. If a copy of the MPL was not distributed with this file, You can
